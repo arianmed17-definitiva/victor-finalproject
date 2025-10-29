@@ -3,7 +3,7 @@ import { connectdb } from "./db.js";
 import { Card } from "./models/Card.js"; // asegúrate de tener este modelo definido
 
 const app = express();
-
+// holaaaa perros del mal
 // Conexión a la base de datos
 connectdb();
 

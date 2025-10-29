@@ -12,3 +12,4 @@ export const connectdb = async () => {
         console.error("Mongo DB Connection Failed");
     }
 }; 
+//hola fuckers 
