@@ -54,7 +54,7 @@ app.get("/getCard/:id", async (req, res) => {
 /* ==========================
    Actualizar tarjeta (PUT)
 ========================== */
-app.put("/updateCard/:id", async (req, res) => {
+app.put("/updateEntireCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
