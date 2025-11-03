@@ -1,18 +1,15 @@
 import express from "express";
 import { connectdb } from "./db.js";
-import { Card } from "./models/Card.js"; // asegúrate de tener este modelo definido
-
+import { Card } from "./models/Card.js"; 
 const app = express();
-// holaaaa perros del mal
+
 // Conexión a la base de datos
 connectdb();
 
 // Middleware para parsear JSON
 app.use(express.json());
 
-/* ==========================
-   Crear nueva tarjeta
-========================== */
+/* Crear nueva tarjeta */
 app.post("/createCard", async (req, res) => {
   try {
     const card = await Card.create(req.body);
@@ -24,9 +21,7 @@ app.post("/createCard", async (req, res) => {
   }
 });
 
-/* ==========================
-   Obtener todas las tarjetas
-========================== */
+/* Obtener todas las tarjetas */
 app.get("/getAllCards", async (req, res) => {
   try {
     const cards = await Card.find();
@@ -37,9 +32,7 @@ app.get("/getAllCards", async (req, res) => {
   }
 });
 
-/* ==========================
-   Obtener tarjeta por ID
-========================== */
+/* Obtener tarjeta por ID */
 app.get("/getCard/:id", async (req, res) => {
   try {
     const card = await Card.findById(req.params.id);
@@ -51,9 +44,7 @@ app.get("/getCard/:id", async (req, res) => {
   }
 });
 
-/* ==========================
-   Actualizar tarjeta (PUT)
-========================== */
+/* Actualizar tarjeta (PUT) */
 app.put("/updateEntireCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(req.params.id, req.body, {
@@ -68,9 +59,7 @@ app.put("/updateEntireCard/:id", async (req, res) => {
   }
 });
 
-/* ==========================
-   Actualizar parcialmente (PATCH)
-========================== */
+/* Actualizar parcialmente (PATCH) */
 app.patch("/updateCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(req.params.id, req.body, {
@@ -84,9 +73,7 @@ app.patch("/updateCard/:id", async (req, res) => {
   }
 });
 
-/* ==========================
-   Eliminar tarjeta
-========================== */
+/* Eliminar tarjeta */
 app.delete("/deleteCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndDelete(req.params.id);
@@ -98,9 +85,7 @@ app.delete("/deleteCard/:id", async (req, res) => {
   }
 });
 
-/* ==========================
-   Endpoints de prueba
-========================== */
+/*  Endpoints de prueba */
 app.get("/hello", (req, res) => {
   res.status(200).send("Hola Mundo desde Node Js desde mi PC, hackeado");
 });
@@ -115,12 +100,9 @@ app.post("/send", (req, res) => {
   res.status(200).send("Data received successfully");
 });
 
-/* ==========================
-   Iniciar servidor
-========================== */
+/* Iniciar servidor */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
 
-/* Soy gay */
