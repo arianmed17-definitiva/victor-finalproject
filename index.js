@@ -1,6 +1,6 @@
 import express from "express";
 import { connectDB } from "./db.js";
-import { Card } from "./models/card.js";
+import { Card } from "./models/Card.js";
 const app = express();
 app.use(express.json());
 connectDB();
@@ -124,16 +124,16 @@ app.post("/send", (req, res) => {
 
 app.get("/review", (req, res) => {
   const endpoints = [
-    "POST /createCard - Create a new card",
-    "GET /getAllCards - Get all cards",
-    "GET /getCard/:id - Get a specific card by ID",
-    "PUT /updateEntireCard/:id - Update all fields of a card",
-    "PATCH /updateCard/:id - Update specific fields of a card",
-    "DELETE /deleteCard/:id - Delete a card",
-    "GET /hola - Hello world greeting",
-    "GET /hello - Hello world greeting with Express",
-    "POST /send - Receive user and email data",
-    "GET /review - Show all available endpoints",
+    "POST /createCard - Crear nueva carta",
+    "GET /getAllCards - Obtener todas las cartas",
+    "GET /getCard/:id - Obtener una carta específica por ID",
+    "PUT /updateEntireCard/:id - Actualizar todos los campos de una carta",
+    "PATCH /updateCard/:id - Actualizar campos específicos de una carta",
+    "DELETE /deleteCard/:id - Eliminar una carta",
+    "GET /hola - Saludo de Hello world",
+    "GET /hello - Saludo de Hello world con Express",
+    "POST /send - Recibir datos de usuario y correo electrónico",
+    "GET /review - Mostrar todos los endpoints disponibles",
   ];
 
   const endpointList = endpoints.join("\n");
