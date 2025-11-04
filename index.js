@@ -1,49 +1,47 @@
 import express from "express";
-import { connectdb } from "./db.js";
-import { Card } from "./models/Card.js"; 
+import { connectDB } from "./db.js";
+import { Card } from "./models/card.js";
 const app = express();
 app.use(express.json());
+connectDB();
 
-// Conexión a la base de datos
-connectdb();
-
-// Middleware para parsear JSON
-/* Crear nueva tarjeta */
+//Create
 app.post("/createCard", async (req, res) => {
   try {
     const card = await Card.create(req.body);
     console.log(card);
-    res.status(201).json({ message: "Card created successfully", card });
+    // respond with created card
+    res.status(201).json(card).send("Card created successfully");
   } catch (error) {
-    res.status(400).json({ error: error.message });
     console.error(error);
+    res.status(400).send("Error creating card");
   }
 });
 
-/* Obtener todas las tarjetas */
 app.get("/getAllCards", async (req, res) => {
   try {
     const cards = await Card.find();
     res.status(200).json(cards);
   } catch (error) {
-    res.status(500).json({ error: error.message });
     console.error(error);
+    res.status(500).send("Error retrieving cards");
   }
 });
-
-/* Obtener tarjeta por ID */
 app.get("/getCard/:id", async (req, res) => {
   try {
-    const card = await Card.findById(req.params.id);
-    if (!card) return res.status(404).json({ message: "Card not found" });
-    res.status(200).json(card);
+    const { id } = req.params; // obtenemos el ID de la URL
+    const cards = await Card.findById(id);
+    if (!cards) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+    res.status(200).json(cards);
   } catch (error) {
-    res.status(400).json({ error: error.message });
     console.error(error);
+    res.status(500).send("Error retrieving cards");
   }
 });
 
-/* Actualizar tarjeta (PUT) */
+//UPDATE
 app.put("/updateEntireCard/:id", async (req, res) => {
   try {
     const { id } = req.params; // obtenemos el ID de la URL
@@ -64,55 +62,86 @@ app.put("/updateEntireCard/:id", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error updating card" });
-  }
+    res.status(500).json({ message: "Error updating card" });
+  }
 });
 
-/* Actualizar parcialmente (PATCH) */
 app.patch("/updateCard/:id", async (req, res) => {
   try {
-    const card = await Card.findByIdAndUpdate(req.params.id, req.body, {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const updatedCard = await Card.findByIdAndUpdate(id, updates, {
       new: true,
     });
-    if (!card) return res.status(404).json({ message: "Card not found" });
-    res.status(200).json({ message: "Card partially updated", card });
+
+    if (!updatedCard) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    res.status(200).json({
+      message: "Card updated successfully",
+      data: updatedCard,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
     console.error(error);
+    res.status(500).json({ message: "Error updating card" });
   }
 });
 
-/* Eliminar tarjeta */
+//DELETE
 app.delete("/deleteCard/:id", async (req, res) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.id);
-    if (!card) return res.status(404).json({ message: "Card not found" });
+    const { id } = req.params; //  se lee el ID de la URL
+    const deletedCard = await Card.findByIdAndDelete(id); // se elimina la tarjeta por id
+
+    if (!deletedCard) {
+      return res.status(404).json({ message: "Card not found" });
+    }
     res.status(200).json({ message: "Card deleted successfully" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
     console.error(error);
+    res.status(500).json({ message: "Error deleting card" });
   }
 });
 
-/*  Endpoints de prueba */
-app.get("/hello", (req, res) => {
-  res.status(200).send("Hola Mundo desde Node Js desde mi PC, hackeado");
+//ENDPOINT
+app.get("/hola", (req, res) => {
+  res.status(200).send("¡Hello world from server! :D");
 });
 
-app.get("/hola", (req, res) => {
-  res.status(200).send("Hello World from a Server!!!");
+app.get("/hello", (req, res) => {
+  res.status(200).send("¡Hello world from server! Express :D");
 });
 
 app.post("/send", (req, res) => {
   const { user, email } = req.body;
-  console.log("Datos recibidos:", user, email);
-  res.status(200).send("Data received successfully");
+  //Datos agregados a una DB
+  console.log("Datos Recibidos:" + user + "" + email);
+
+  res.status(200).send("Data received succesfully");
 });
 
-/* Iniciar servidor */
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+app.get("/review", (req, res) => {
+  const endpoints = [
+    "POST /createCard - Create a new card",
+    "GET /getAllCards - Get all cards",
+    "GET /getCard/:id - Get a specific card by ID",
+    "PUT /updateEntireCard/:id - Update all fields of a card",
+    "PATCH /updateCard/:id - Update specific fields of a card",
+    "DELETE /deleteCard/:id - Delete a card",
+    "GET /hola - Hello world greeting",
+    "GET /hello - Hello world greeting with Express",
+    "POST /send - Receive user and email data",
+    "GET /review - Show all available endpoints",
+  ];
+
+  const endpointList = endpoints.join("\n");
+  res.status(200).send(endpointList);
+});
+
+app.listen(3000, () => {
+  console.log("Server started at http://localhost:3000");
 });
 
 
