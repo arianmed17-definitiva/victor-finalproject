@@ -1,18 +1,16 @@
 import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
 import { connectdb } from "./db.js";
-import { Card } from "./models/card.js";
-
-dotenv.config();
+import { Card } from "./models/Card.js"; 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Conexión a la base de datos
 connectdb();
 
-// Crear una tarjeta
-app.post("/api/cards", async (req, res) => {
+// Middleware para parsear JSON
+app.use(express.json());
+
+/* Crear nueva tarjeta */
+app.post("/createCard", async (req, res) => {
   try {
     const card = await Card.create(req.body);
     console.log(card);
@@ -23,8 +21,8 @@ app.post("/api/cards", async (req, res) => {
   }
 });
 
-// Obtener todas las tarjetas
-app.get("/api/cards", async (req, res) => {
+/* Obtener todas las tarjetas */
+app.get("/getAllCards", async (req, res) => {
   try {
     const cards = await Card.find();
     res.status(200).json(cards);
@@ -34,8 +32,8 @@ app.get("/api/cards", async (req, res) => {
   }
 });
 
-// Obtener una tarjeta por ID
-app.get("/api/cards/:id", async (req, res) => {
+/* Obtener tarjeta por ID */
+app.get("/getCard/:id", async (req, res) => {
   try {
     const card = await Card.findById(req.params.id);
     if (!card) return res.status(404).json({ message: "Card not found" });
@@ -46,25 +44,37 @@ app.get("/api/cards/:id", async (req, res) => {
   }
 });
 
-// Actualizar una tarjeta (PUT) 
-app.put("/api/cards/:id", async (req, res) => {
+/* Actualizar tarjeta (PUT) */
+app.put("/updateEntireCard/:id", async (req, res) => {
+  try {
+    const { id } = req.params; // obtenemos el ID de la URL
+    const updates = req.body; //  los campos que quieres actualizar
+
+    // Usamos findByIdAndUpdate para actualizar parcialmente
+    const updatedCard = await Card.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
+
+    if (!updatedCard) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    res.status(200).json({
+      message: "Card updated successfully",
+      data: updatedCard,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating card" });
+  }
+});
+
+/* Actualizar parcialmente (PATCH) */
+app.patch("/updateCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true,
     });
-    if (!card) return res.status(404).json({ message: "Card not found" });
-    res.status(200).json({ message: "Card updated successfully", card });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-    console.error(error);
-  }
-});
-
-// Actualizar parcialmente (PATCH)
-app.patch("/api/cards/:id", async (req, res) => {
-  try {
-    const card = await Card.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!card) return res.status(404).json({ message: "Card not found" });
     res.status(200).json({ message: "Card partially updated", card });
   } catch (error) {
@@ -73,8 +83,8 @@ app.patch("/api/cards/:id", async (req, res) => {
   }
 });
 
-// Eliminar una tarjeta
-app.delete("/api/cards/:id", async (req, res) => {
+/* Eliminar tarjeta */
+app.delete("/deleteCard/:id", async (req, res) => {
   try {
     const card = await Card.findByIdAndDelete(req.params.id);
     if (!card) return res.status(404).json({ message: "Card not found" });
@@ -85,13 +95,25 @@ app.delete("/api/cards/:id", async (req, res) => {
   }
 });
 
-// Ruta principal
-app.get("/", (req, res) => {
-  res.status(200).send("API funcionando correctamente en Render");
+/*  Endpoints de prueba */
+app.get("/hello", (req, res) => {
+  res.status(200).send("Hola Mundo desde Node Js desde mi PC, hackeado");
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+app.get("/hola", (req, res) => {
+  res.status(200).send("Hello World from a Server!!!");
 });
+
+app.post("/send", (req, res) => {
+  const { user, email } = req.body;
+  console.log("Datos recibidos:", user, email);
+  res.status(200).send("Data received successfully");
+});
+
+/* Iniciar servidor */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+});
+
 
