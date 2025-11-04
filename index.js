@@ -2,13 +2,12 @@ import express from "express";
 import { connectdb } from "./db.js";
 import { Card } from "./models/Card.js"; 
 const app = express();
+app.use(express.json());
 
 // Conexión a la base de datos
 connectdb();
 
 // Middleware para parsear JSON
-app.use(express.json());
-
 /* Crear nueva tarjeta */
 app.post("/createCard", async (req, res) => {
   try {
